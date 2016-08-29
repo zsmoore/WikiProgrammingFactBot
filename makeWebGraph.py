@@ -18,6 +18,7 @@ def crawl(file_name):
                 write_to.write(start_url + '\t' +  'https://en.wikipedia.org/' + str(inner_link) + '\n')
                 recurse(inner_link, file_name)
         except:
+            print('hit')
             pass
 
         
