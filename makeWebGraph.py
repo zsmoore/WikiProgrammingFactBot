@@ -14,11 +14,8 @@ def crawl(file_name):
     
     soup = BeautifulSoup(start_page.content)
 
-    counter2 = 100000000000000
     for link in soup.find_all('a'):
         inner_link = str(link.get('href'))
-        print(counter2)
-        counter2 -= 1
         try:
             if type(inner_link) is None or inner_link is 'None':
                 print('hit')
@@ -41,17 +38,13 @@ def recurse(came_from, file_name):
     pre_cursor = 'https://en.wikipedia.org'
     write_to = open(file_name, 'a')
     global visited
-    print(visited)
     try:
         req = requests.get(pre_cursor + came_from)
         soup = BeautifulSoup(req.content)
     except:
         return
-    counter = 0
     for link in soup.find_all('a'):
         inner_link = str(link.get('href'))
-        print(counter)
-        counter += 1
         if(type(inner_link) == None):
             continue
         elif str(inner_link).startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
