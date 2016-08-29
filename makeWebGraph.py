@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+import sys
 
-
+sys.setrecursionlimit(1000000)
 visited = set()
 
 def crawl(file_name):
