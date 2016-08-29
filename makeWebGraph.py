@@ -14,8 +14,8 @@ def crawl(file_name):
             if type(inner_link) is None or inner_link is 'None':
                 print('hit')
                 continue
-            elif inner_link.startswith('/wiki') and inner_link.find('.') == -1:
-                write_to.write(start_url + '\t' +  str(inner_link) + '\n')
+            elif inner_link.startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
+                write_to.write(start_url + '\t' +  'https://en.wikipedia.org/' + str(inner_link) + '\n')
                 recurse(inner_link, file_name)
         except:
             pass
@@ -37,7 +37,7 @@ def recurse(came_from, file_name):
         inner_link = link.get('href')
         if(type(inner_link) == None):
             continue
-        elif inner_link.startswith('/wiki'):
+        elif inner_link.startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
             write_to.write(pre_cursor + came_from + '\t' + pre_cursor + str(inner_link) + '\n')
             recurse(inner_link, file_name)
 
