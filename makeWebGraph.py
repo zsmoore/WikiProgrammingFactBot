@@ -1,46 +1,66 @@
 from bs4 import BeautifulSoup
 import requests
 
+
+visited = set()
+
 def crawl(file_name):
     
     start_url = 'https://en.wikipedia.org/wiki/Computer'
+    global visited
+    visited.add('/wiki/Computer')
     start_page = requests.get(start_url)
     write_to = open(file_name, 'a')
     
     soup = BeautifulSoup(start_page.content)
+
+    counter2 = 100000000000000
     for link in soup.find_all('a'):
-        inner_link = link.get('href')
+        inner_link = str(link.get('href'))
+        print(counter2)
+        counter2 -= 1
         try:
             if type(inner_link) is None or inner_link is 'None':
                 print('hit')
                 continue
-            elif inner_link.startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
-                write_to.write(start_url + '\t' +  'https://en.wikipedia.org/' + str(inner_link) + '\n')
-                recurse(inner_link, file_name)
-        except:
-            print('hit')
+            elif str(inner_link).startswith('/wiki') and str(inner_link).find('.') == -1 and str(inner_link).find(':') == -1:
+                if(str(inner_link) not in visited):
+                    visited.add(str(inner_link))
+                    write_to.write(start_url + '\t' +  'https://en.wikipedia.org/' + str(inner_link) + '\n')
+                    write_to.flush()
+                    recurse(str(inner_link), file_name)
+        except Exception as e:
+            print(e)
+            print(inner_link)
             pass
+    write_to.close()
 
         
 def recurse(came_from, file_name):
     
     pre_cursor = 'https://en.wikipedia.org'
     write_to = open(file_name, 'a')
-    
+    global visited
+    print(visited)
     try:
         req = requests.get(pre_cursor + came_from)
         soup = BeautifulSoup(req.content)
     except:
-        print(came_from)
         return
-
+    counter = 0
     for link in soup.find_all('a'):
-        inner_link = link.get('href')
+        inner_link = str(link.get('href'))
+        print(counter)
+        counter += 1
         if(type(inner_link) == None):
             continue
-        elif inner_link.startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
-            write_to.write(pre_cursor + came_from + '\t' + pre_cursor + str(inner_link) + '\n')
-            recurse(inner_link, file_name)
+        elif str(inner_link).startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
+            if(str(inner_link) not in visited):
+                visited.add(str(inner_link))
+                write_to.write(pre_cursor + came_from + '\t' + pre_cursor + str(inner_link) + '\n')
+                write_to.flush()
+                recurse(inner_link, file_name)
+    write_to.close()
 
 
 def main():
