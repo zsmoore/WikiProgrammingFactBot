@@ -26,7 +26,7 @@ def crawl(file_name):
                     visited.add(str(inner_link))
                     write_to.write(start_url + '\t' +  'https://en.wikipedia.org/' + str(inner_link) + '\n')
                     write_to.flush()
-                    recurse(str(inner_link), file_name)
+                    recurse(str(inner_link), file_name, 0)
         except Exception as e:
             print(e)
             print(inner_link)
@@ -34,27 +34,30 @@ def crawl(file_name):
     write_to.close()
 
         
-def recurse(came_from, file_name):
+def recurse(came_from, file_name, level):
     
-    pre_cursor = 'https://en.wikipedia.org'
-    write_to = open(file_name, 'a')
-    global visited
-    try:
-        req = requests.get(pre_cursor + came_from)
-        soup = BeautifulSoup(req.content)
-    except:
+    if level > 3:
         return
-    for link in soup.find_all('a'):
-        inner_link = str(link.get('href'))
-        if(type(inner_link) == None):
-            continue
-        elif str(inner_link).startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
-            if(str(inner_link) not in visited):
-                visited.add(str(inner_link))
-                write_to.write(pre_cursor + came_from + '\t' + pre_cursor + str(inner_link) + '\n')
-                write_to.flush()
-                recurse(inner_link, file_name)
-    write_to.close()
+    else:
+        pre_cursor = 'https://en.wikipedia.org'
+        write_to = open(file_name, 'a')
+        global visited
+        try:
+            req = requests.get(pre_cursor + came_from)
+            soup = BeautifulSoup(req.content)
+        except:
+            return
+        for link in soup.find_all('a'):
+            inner_link = str(link.get('href'))
+            if(type(inner_link) == None):
+                continue
+            elif str(inner_link).startswith('/wiki') and inner_link.find('.') == -1 and inner_link.find(':') == -1:
+                if(str(inner_link) not in visited):
+                    visited.add(str(inner_link))
+                    write_to.write(pre_cursor + came_from + '\t' + pre_cursor + str(inner_link) + '\n')
+                    write_to.flush()
+                    recurse(inner_link, file_name, level + 1)
+        write_to.close()
 
 
 def main():
