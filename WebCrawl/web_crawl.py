@@ -1,33 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import pprint
-
-
-#Pull from website that has key comp sci terms
-def get_keywords():
-
-    #Set up site scrape
-    keywords = []
-    keyword_url = 'http://www.labautopedia.org/mw/List_of_programming_and_computer_science_terms'
-    keyword_page = requests.get(keyword_url)
-    html = keyword_page.content
-    soup = BeautifulSoup(html, 'lxml')
-    
-    #For each term on website
-    for key in soup.find_all('b'):
-        
-        #Format string
-        key = str(key).split('>')[1].split('<')[0].strip().strip('-')
-        key = key.replace(' ', '_')
-        
-        #Break if at end of key term list
-        if key == 'Bold.':
-            break
-        else:
-            keywords.append(key)
-    
-    #Return start of terms to end of list
-    return keywords[4:]
+import ./relation.py
 
 #Based on KeyWords start building web graph of programming terms
 def create_graph(keywords):
@@ -69,11 +43,20 @@ def dig_deeper(remaining_levels, term):
 
 
 
+#Main
 def main():
-
-    keys = get_keywords()
-    create_graph(keys)
     
+    #Grab arguments
+    subject = sys.argv[1]
+    base_url = sys.argv[2]
+
+    base_obj = Relation(subject, base_url)
+    keys = get_keywords(base_obj)
+    create_graph(keys)
 
 
-main()
+#Main will run if nothing else specified
+if __name__ == "__main__":
+    main()
+
+
