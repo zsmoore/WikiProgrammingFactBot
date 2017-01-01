@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import pprint
 
+
 #Pull from website that has key comp sci terms
 def get_keywords():
 
@@ -36,18 +37,37 @@ def create_graph(keywords):
     
     #For each key term
     for word in keywords:
-        
+       
         #Build new urls and get html request
         full = base + word
         req = requests.get(full)
         html = req.content
         soup = BeautifulSoup(html, 'lxml')
         
+        include = True
         #Filter out any disambiguations
         for test in soup.find_all('p'):
             test = str(test)
             if 'may refer to:' in test:
-                print(test)
+                #print(test)
+                include = False
+        
+        #Only recurse on good links
+        if include == True:
+            dig_deeper(3, term)
+                        
+
+#Branch out deeper on wikipedia to a certain depth
+def dig_deeper(remaining_levels, term):
+    
+    #No more recurses
+    if remaining_levels == 0:
+        return
+    else:
+        #do stuff
+        dig_deeper(remaining_levels - 1, #next term)
+
+
 
 def main():
 
