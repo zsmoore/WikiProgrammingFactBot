@@ -29,7 +29,7 @@ class Relation:
             print('word not in class')
 
         else:
-            self.base_words.remove(word):
+            self.base_words.remove(word)
             del self.base_words_def_count[word]
 
     '''
@@ -39,7 +39,7 @@ class Relation:
     def initialize_keywords(self):
 
         req = requests.get(self.base_url)
-        html = req.html
+        html = req.content
         soup = BeautifulSoup(html, 'lxml')
 
         #For each term on website
@@ -53,11 +53,13 @@ class Relation:
             if key == 'Bold.':
                 break
             else:
-                keywords.append(key)
-                      
-        #Return start of terms to end of list
-        return keywords[4:]
+                if key == '' or key == ' ':
+                    continue
+                self.add_key(key)
 
+    #Return base words
+    def get_base_words(self):
+        return self.base_words
 
     #To String will print out what this object is relating
     def __str__(self):
