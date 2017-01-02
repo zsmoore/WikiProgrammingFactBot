@@ -119,58 +119,7 @@ def create_graph(relation_obj):
     #Dump subject's graph to json
     with open(str(relation_obj) + '.json', 'w') as fp:
         json.dump(graph, fp)
-                        
 
-'''
-#Branch out deeper on wikipedia to a certain depth
-def dig_deeper(remaining_levels, term, graph, visited):
-    
-    #No more recurses
-    if remaining_levels == 0:
-        return
-    else:
-        
-        print(remaining_levels, term)
-        #initialize term in graph to a set    
-        if term not in graph:
-            graph[term] = set()
-
-        #Base url for requests
-        base = 'https://en.wikipedia.org/'
-        
-        #Get request
-        full = base + term
-        req = requests.get(full)
-        html = req.content
-        soup = BeautifulSoup(html, 'lxml')
-
-        #Should be a single div not a long loop
-        for div in soup.find_all('div', {'id':'bodyContent'}):
-            #If at disambiguation consider end node and exit recursion
-            for test in div.find_all('p'):
-                test = str(test)
-                if 'may refer to:' in test:
-                    return
-
-            #Get all connections
-            for link in div.find_all('a'):
-                inner_link = link.get('href')
-                
-                #Check for Nones
-                if not isinstance(inner_link, str):
-                    pass
-                #Filter links to only allow other wiki links
-                elif inner_link.startswith('/wiki/') and inner_link not in visited:
-                    #Add node to visited
-                    visited.add(inner_link)
-
-                    #Add edge to graph
-                    graph[term].add(inner_link)
-    
-                    #recurse deeper
-                    dig_deeper(remaining_levels - 1, inner_link, graph, visited)
-
-'''
 
 #Main
 def main():
@@ -189,6 +138,8 @@ def main():
     
     #initialize each graph
     for obj in relation_obj_list:
+        obj.relate_keys()
+        exit()
         create_graph(obj)
 
 
