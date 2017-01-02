@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 import pprint
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.api import StemmerI
 
 #Class with methods for relating keywords and finding common ground for subjects
 class Relation:
@@ -11,6 +14,7 @@ class Relation:
         self.base_url = base_url_for_terms
         self.base_words = set()
         self.base_words_def_count = {}
+        self.stemmed = {}
 
     #Add new Key word into class
     def add_key(self, word):
@@ -61,7 +65,45 @@ class Relation:
     def relate_keys(self):
         
         self.grab_defs()
-        pprint.pprint(self.base_words_def_count)
+        self.remove_outliers()
+        self.stem_relate()
+        pprint.pprint(self.stemmed)
+        #pprint.pprint(self.base_words_def_count)
+        #print(len(self.base_words_def_count.keys()))
+
+    #MAYBE BUILDING TRIE IS BETTER?
+    def build_trie(self):
+
+        trie = {}
+        for word in self.base_words_def_count.keys():
+            for i in range(len(word)):
+                pass
+                
+
+
+    #Get stems of words and sum them
+    def stem_relate(self):
+        
+        x = nltk.stem.SnowballStemmer('english')
+        for word in self.base_words_def_count.keys():
+            stem = x.stem(word)
+            if stem not in self.stemmed:
+                self.stemmed[stem] = 1
+            else:
+                self.stemmed[stem] += 1
+
+
+    #Remove outliers from word count in order to remove common language
+    def remove_outliers(self):
+        
+        #Get keys that arent common word
+        s = set(stopwords.words('english'))
+        filtered = filter(lambda w: not w in s, list(self.base_words_def_count.keys()))
+        filtered = set(filtered)
+        
+        #Make dict = difference of dict and filtered
+        for word in set(self.base_words_def_count.keys()) - filtered:
+            del self.base_words_def_count[word]
 
     #Grabs definitions for key words 
     def grab_defs(self):
@@ -84,7 +126,7 @@ class Relation:
                 for word in entry.split():
                     
                     #Strip away commas, periods, quotes
-                    word = word.strip().strip(',').strip('.').strip('\'').strip('\"')
+                    word = word.strip().strip(',').strip('.').strip('\'').strip('\"').strip('(').strip(')')
                     
                     #Get rid of parenthesis
                     if word.startswith('('):
@@ -125,7 +167,3 @@ class Relation:
     #To String will print out what this object is relating
     def __str__(self):
         return self.subject
-           
-    
-       
-        
