@@ -59,7 +59,7 @@ class Relation:
             else:
                 if key == '' or key == ' ':
                     continue
-                self.add_key(key)
+                self.add_key(key.lower())
     
     #Algo to relate key words
     def relate_keys(self):
@@ -67,8 +67,8 @@ class Relation:
         self.grab_defs()
         self.remove_outliers()
         self.stem_relate()
-        pprint.pprint(self.stemmed)
-        print(len(self.stemmed.keys()))
+        #pprint.pprint(self.stemmed)
+        #print(len(self.stemmed.keys()))
         #pprint.pprint(self.base_words_def_count)
         #print(len(self.base_words_def_count.keys()))
 
