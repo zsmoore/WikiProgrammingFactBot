@@ -31,7 +31,7 @@ def create_graph(relation_obj):
     #For each key term
     count = 0
     for word in relation_obj.get_base_words():
-        if count < 1256:
+        if count < 1257:
             count += 1
             continue
 
@@ -55,12 +55,12 @@ def create_graph(relation_obj):
         if include == True:
             visited.add('/wiki/' + word)
             #HERE IS WHERE DISTANCE IS DECIDED
-            dist['/wiki/' + word] = 1
+            dist['/wiki/' + word] = 2
             queue.append('/wiki/' + word)
     
     #BFS
     while len(queue) > 0:
-        node = queue.pop()
+        node = queue.popleft()
 
         print(dist[node], node)
 
@@ -96,21 +96,23 @@ def create_graph(relation_obj):
                 if not isinstance(inner_link, str):
                     continue
                 #Filter links to only allow other wiki links
-                elif inner_link.startswith('/wiki/') and inner_link not in visited:
+                elif inner_link.startswith('/wiki/'):
        
                     #Add edge to graph
                     graph[node].add(inner_link)
                     
-                    #Only continue if we haven't reached our max depth yet
-                    if dist[node] > 0:
-                        #Add node to visited
-                        visited.add(inner_link)
+                    if inner_link not in visited:
+                        
+                        #Only continue if we haven't reached our max depth yet
+                        if dist[node] > 0:
+                            #Add node to visited
+                            visited.add(inner_link)
  
-                        #Add to queue
-                        queue.append(inner_link)
+                            #Add to queue
+                            queue.append(inner_link)
         
-                        #Decrement distance
-                        dist[inner_link] = dist[node] - 1
+                            #Decrement distance
+                            dist[inner_link] = dist[node] - 1
 
     #Change sets to lists so it is json compatible
     for key in graph:
@@ -139,7 +141,6 @@ def main():
     #initialize each graph
     for obj in relation_obj_list:
         obj.relate_keys()
-        exit()
         create_graph(obj)
 
 
